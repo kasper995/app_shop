@@ -8,24 +8,23 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import java.util.ArrayList;
-
 public class ItemAdapter extends BaseAdapter {
 
-    private ArrayList<Product> data;
+
+
 
     private Context context;
 
-    public ItemAdapter(Context context, ArrayList<Product> list) {
+    public ItemAdapter(Context context) {
         super();
-        this.data = list;
+
 
         this.context = context;
     }
 
     @Override
     public int getCount() {
-        return data.size();
+        return MyProductList.getInstance().getProducts().size();
     }
 
     @Override
@@ -42,7 +41,7 @@ public class ItemAdapter extends BaseAdapter {
     public View getView(int position, View convertView, ViewGroup parent) {
         View rowView = LayoutInflater.from(context).
                 inflate(R.layout.product, parent, false);
-        Product p = data.get(position);
+        final Product p = MyProductList.getInstance().getProducts().get(position);
         TextView text1 = (TextView) rowView.findViewById(R.id.item_name);
         TextView text2 = (TextView) rowView.findViewById(R.id.plist_price_text);
         TextView text3 = (TextView) rowView.findViewById(R.id.plist_weight_text);
@@ -59,6 +58,8 @@ public class ItemAdapter extends BaseAdapter {
                 int i = Integer.parseInt(amount.getText().toString());
                 int result = i + 1;
                 amount.setText(String.valueOf(result));
+                p.amount = result;
+
             }
         });
         minus.setOnClickListener(new View.OnClickListener() {
@@ -69,7 +70,10 @@ public class ItemAdapter extends BaseAdapter {
                 if (result < 0) {
                     result = 0;
                 }
+                p.amount = result;
+
                 amount.setText(String.valueOf(result));
+
             }
         });
 

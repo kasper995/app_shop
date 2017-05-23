@@ -15,6 +15,7 @@ import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import cz.msebera.android.httpclient.Header;
@@ -25,6 +26,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnKeyListen
     EditText etEmail;
     ProgressDialog prgDialog;
     int customerid;
+    Customer customer;
 
 
     @Override
@@ -121,15 +123,16 @@ public class LoginActivity extends AppCompatActivity implements View.OnKeyListen
         // Show Progress Dialog
         AsyncHttpClient client = new AsyncHttpClient();
 
-        client.get(ENDPOINT, new JsonHttpResponseHandler() {
+        client.get(ENDPOINT, params, new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                 try {
+                    //JSONObject obj = response.getJSONObject(0);
+                    customer = new Customer(response.getString("email"),response.getString("name"),response.getString("id"));
 
-                    //ArrayList<Product> yourArray = new Gson().fromJson(response.toString(), new TypeToken<List<Product>>(){}.getType());
-                   customerid = Integer.valueOf(response.getString("id"));
+                    navigatetoHomeActivity();
 
-                    //test = yourArray.get(1).toString();
+
                 } catch (Exception e) {
                     // TODO Auto-generated catch block
                     e.printStackTrace();
@@ -139,7 +142,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnKeyListen
             }
 
             @Override
-            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONArray errorResponse) {
                 toast("failed to get the json objs");
 
             }
@@ -148,7 +151,9 @@ public class LoginActivity extends AppCompatActivity implements View.OnKeyListen
     public void navigatetoHomeActivity(){
         Intent homeIntent = new Intent(getApplicationContext(),MainActivity.class);
         homeIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        homeIntent.putExtra("id", customerid);
+        homeIntent.putExtra("id", customer.getId());
+        homeIntent.putExtra("name", customer.getName());
+        homeIntent.putExtra("email", customer.getEmail());
         startActivity(homeIntent);
     }
 
